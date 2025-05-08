@@ -9,6 +9,9 @@ import threading
 from queue import Queue
 import webview
 import logging
+import signal
+import sys
+import atexit
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -37,6 +40,8 @@ app.secret_key = os.urandom(24)
 tokens = {}
 auth_complete = Queue()
 window = None
+server_thread = None
+is_shutting_down = False
 
 # HTML template for the popup window
 POPUP_HTML = """
@@ -83,6 +88,45 @@ POPUP_HTML = """
 </body>
 </html>
 """
+
+def cleanup_resources():
+    """Clean up all resources before shutting down."""
+    global window, server_thread, is_shutting_down
+    
+    if is_shutting_down:
+        return
+        
+    is_shutting_down = True
+    logger.info("Cleaning up resources...")
+    
+    # Close the window if it exists
+    if window:
+        try:
+            window.destroy()
+        except:
+            pass
+    
+    # Stop the Flask server
+    if server_thread and server_thread.is_alive():
+        try:
+            # Send a request to shutdown the server
+            requests.get('http://localhost:3000/shutdown')
+            server_thread.join(timeout=5)
+        except:
+            pass
+
+def signal_handler(signum, frame):
+    """Handle termination signals."""
+    logger.info(f"Received signal {signum}")
+    cleanup_resources()
+    sys.exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+# Register cleanup function
+atexit.register(cleanup_resources)
 
 def get_authorization_url() -> str:
     """Generate the authorization URL for user to click."""
@@ -135,11 +179,12 @@ def start_oauth_server():
     try:
         app.run(port=3000)
     except Exception as e:
-        logger.error(f"Error starting OAuth server: {str(e)}")
+        if not is_shutting_down:
+            logger.error(f"Error starting OAuth server: {str(e)}")
 
 def initiate_oauth_flow():
     """Start the OAuth flow and wait for completion."""
-    global window
+    global window, server_thread
     
     # Start the OAuth server in a separate thread
     server_thread = threading.Thread(target=start_oauth_server)
@@ -169,7 +214,7 @@ def initiate_oauth_flow():
         
         def on_closed():
             """Callback when the window is closed."""
-            if not tokens:
+            if not tokens and not is_shutting_down:
                 auth_complete.put(False)
         
         window.events.loaded += on_loaded
@@ -250,6 +295,15 @@ def oauth_callback():
             except:
                 pass
         return render_template_string(POPUP_HTML, message=f"Error: {str(e)}"), 400
+
+@app.route('/shutdown')
+def shutdown():
+    """Endpoint to shutdown the Flask server."""
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+    return 'Server shutting down...'
 
 # Add a health check endpoint
 @app.route('/health')
