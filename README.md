@@ -62,75 +62,31 @@ pip install -r requirements.txt
    - Client Secret
    - Account ID (found in your Zoom account settings)
 
-### 2. Google Cloud Project Setup
+### 2. Gemini API Key Setup (for Google LLM/ADK)
 
-1. Go to the Google Cloud Console (https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the following APIs:
-   - Google ADK API
-   - Cloud Natural Language API
-4. Create a service account:
-   - Go to "IAM & Admin" > "Service Accounts"
-   - Click "Create Service Account"
-   - Grant the following roles:
-     - ADK API User
-     - Cloud Natural Language API User
-5. Create and download a JSON key file for the service account
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account and create a new Gemini API key
+3. Copy your API key
+4. Add the following to your `.env` file in the project root:
+   ```env
+   GEMINI_API_KEY=your_gemini_api_key_here
+   ```
 
-### 3. Environment Configuration
+### 3. Example `.env` file
 
-1. Create a `.env` file in the project root:
-```bash
-touch .env
-```
-
-2. Add the following variables to your `.env` file:
 ```env
 # Zoom Credentials
 ZOOM_CLIENT_ID=your_client_id_here
 ZOOM_CLIENT_SECRET=your_client_secret_here
 ZOOM_ACCOUNT_ID=your_account_id_here
 
-# Google Cloud Credentials
-GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
-GOOGLE_CLOUD_PROJECT=your_project_id
+# Gemini API Key
+GOOGLE_API_KEY=your_gemini_api_key_here
 
 # Application Settings
 FLASK_ENV=development
 FLASK_DEBUG=1
 LOG_LEVEL=INFO
-```
-
-3. Set up the Google credentials:
-```bash
-# For Linux/Mac
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/your/service-account-key.json"
-
-# For Windows (PowerShell)
-$env:GOOGLE_APPLICATION_CREDENTIALS="path/to/your/service-account-key.json"
-```
-
-### 4. Testing Environment Setup
-
-1. Create a test configuration file `config.test.py`:
-```python
-TEST_CONFIG = {
-    'ZOOM_CLIENT_ID': 'test_client_id',
-    'ZOOM_CLIENT_SECRET': 'test_client_secret',
-    'ZOOM_ACCOUNT_ID': 'test_account_id',
-    'GOOGLE_APPLICATION_CREDENTIALS': 'path/to/test/credentials.json'
-}
-```
-
-2. Create a test `.env.test` file:
-```env
-ZOOM_CLIENT_ID=test_client_id
-ZOOM_CLIENT_SECRET=test_client_secret
-ZOOM_ACCOUNT_ID=test_account_id
-GOOGLE_APPLICATION_CREDENTIALS=path/to/test/credentials.json
-FLASK_ENV=testing
-FLASK_DEBUG=0
-LOG_LEVEL=DEBUG
 ```
 
 ## Project Structure
@@ -143,17 +99,7 @@ zoom_adk_s2s/
 │   ├── main.py          # Application entry point
 │   ├── zoom.py          # Zoom API integration
 │   └── zoom_oauth.py    # OAuth authentication handling
-├── tests/
-│   ├── __init__.py
-│   ├── test_agent.py
-│   ├── test_zoom.py
-│   └── test_oauth.py
-├── config/
-│   ├── __init__.py
-│   ├── config.py
-│   └── config.test.py
 ├── .env
-├── .env.test
 ├── requirements.txt
 └── README.md
 ```
@@ -222,13 +168,12 @@ All agent testing is performed using the ADK Web interface, which you can launch
    ```bash
    adk web
    ```
-   This command will launch the ADK web UI in your browser, allowing you to interactively test your agent.
+   This command will launch the ADK web UI in your browser at `http://localhost:8000`, allowing you to interactively test your agent.
 
 3. **Use the ADK Web UI:**
    - Select your agent.
    - Enter natural language prompts (e.g., "Create a meeting tomorrow at 2pm").
    - Observe and validate the agent's responses.
-   - Test various scenarios, edge cases, and error handling.
 
 4. **Review logs and analytics in the web UI.**
 
