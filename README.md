@@ -254,55 +254,5 @@ python -c "from dotenv import load_dotenv; load_dotenv(); import os; print('ZOOM
 python -c "import os; print('GOOGLE_APPLICATION_CREDENTIALS:', os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))"
 ```
 
-### 2. Common Errors
 
-1. OAuth Token Issues:
-   - Error: "Invalid client credentials"
-   - Solution: Verify your Zoom Client ID and Secret
-   - Check if your app is activated in Zoom Marketplace
 
-2. Google ADK Issues:
-   - Error: "Could not find the default credentials"
-   - Solution: Set GOOGLE_APPLICATION_CREDENTIALS environment variable
-   - Verify service account permissions
-
-3. Meeting Creation Issues:
-   - Error: "Invalid time format"
-   - Solution: Use supported time formats (ISO 8601 or natural language)
-   - Check timezone settings
-
-## Security Best Practices
-
-1. Credential Management:
-   - Never commit `.env` files
-   - Use environment variables
-   - Rotate credentials regularly
-   - Use different credentials for development and production
-
-2. API Security:
-   - Implement rate limiting
-   - Use HTTPS for all API calls
-   - Validate all input data
-   - Implement proper error handling
-
-3. Logging:
-   - Use appropriate log levels
-   - Don't log sensitive information
-   - Implement log rotation
-   - Monitor for suspicious activity
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-[Add your license information here]
-
-## Support
-
-For support, please [add your support contact information or process] 
