@@ -7,6 +7,8 @@ A Python-based Zoom Agent built using Google ADK. This project provides a framew
 - Server-to-Server OAuth authentication with Zoom
 - Google ADK integration for AI-powered meeting management
 - Natural language processing for meeting scheduling
+- Email management and analysis using Gmail integration
+- Calendar management for meeting scheduling
 - Web-based interface using Flask and PyWebView
 - Modular architecture for easy extension
 
@@ -16,6 +18,7 @@ A Python-based Zoom Agent built using Google ADK. This project provides a framew
 - Zoom Account with Server-to-Server OAuth app
 - Google Cloud Project with ADK access
 - Zoom Account ID, Client ID, and Client Secret
+- Gmail account for email integration
 
 ## Installation
 
@@ -98,7 +101,9 @@ zoom_adk_s2s/
 │   ├── agent.py          # Google ADK agent implementation
 │   ├── main.py          # Application entry point
 │   ├── zoom.py          # Zoom API integration
-│   └── zoom_oauth.py    # OAuth authentication handling
+│   ├── zoom_oauth.py    # OAuth authentication handling
+│   ├── gmail.py         # Gmail integration
+│   └── calendar.py      # Calendar management
 ├── .env
 ├── requirements.txt
 └── README.md
@@ -124,31 +129,29 @@ python new_agent/main.py
 
 ### Natural Language Commands
 
-The application supports natural language commands for managing Zoom meetings. Here are some examples:
+The application supports natural language commands for managing Zoom meetings, emails, and calendar events. Here are some examples:
 
-1. Create a meeting:
+1. Email Management:
+```
+Check my emails
+Show me urgent emails
+Mark email as read
+```
+
+2. Meeting Management:
 ```
 Create a meeting tomorrow at 2pm for team sync
-```
-
-2. List meetings:
-```
 Show my meetings for next week
-```
-
-3. Update a meeting:
-```
 Change the team sync meeting to 3pm tomorrow
-```
-
-4. Delete a meeting:
-```
 Delete the team sync meeting
+Start the team sync meeting
 ```
 
-5. Start/Join a meeting:
+3. Calendar Management:
 ```
-Start the team sync meeting
+Show my calendar for today
+Add meeting to calendar
+List upcoming events
 ```
 
 ## Testing
@@ -172,7 +175,7 @@ All agent testing is performed using the ADK Web interface, which you can launch
 
 3. **Use the ADK Web UI:**
    - Select your agent.
-   - Enter natural language prompts (e.g., "Create a meeting tomorrow at 2pm").
+   - Enter natural language prompts (e.g., "Check my emails", "Create a meeting tomorrow at 2pm").
    - Observe and validate the agent's responses.
 
 4. **Review logs and analytics in the web UI.**
@@ -197,6 +200,22 @@ python -c "from dotenv import load_dotenv; load_dotenv(); import os; print('ZOOM
 ```bash
 # Verify Google credentials
 python -c "import os; print('GOOGLE_APPLICATION_CREDENTIALS:', os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))"
+```
+
+### 2. Email Integration Issues
+
+1. Check Gmail Configuration:
+```bash
+# Verify Gmail settings
+python -c "from new_agent.gmail import check_emails; print(check_emails())"
+```
+
+### 3. Calendar Integration Issues
+
+1. Check Calendar Configuration:
+```bash
+# Verify Calendar settings
+python -c "from new_agent.calendar import list_calendar_events; print(list_calendar_events())"
 ```
 
 
